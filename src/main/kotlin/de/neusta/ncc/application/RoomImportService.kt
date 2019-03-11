@@ -8,7 +8,6 @@ import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
 import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import de.neusta.ncc.domain.Room
 import de.neusta.ncc.domain.RoomRepository
-import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -23,7 +22,7 @@ class RoomImportService @Autowired constructor(
         private var ldapUserUniqueValidator: LdapUserUniqueValidator,
         private var roomRepository: RoomRepository) {
 
-    @Throws(CsvPersonNotValidException::class, RoomNumberNotValidException::class, RoomIsNotUniqueException::class, LdapUserIsNotUniqueException::class)
+    @Throws(RoomNumberNotValidException::class, RoomIsNotUniqueException::class, LdapUserIsNotUniqueException::class)
     fun importRooms(rooms: List<Room>) {
         validateRoomNumber(rooms)
         validateRoomNumbersAreUnique(rooms)
