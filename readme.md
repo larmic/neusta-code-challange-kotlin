@@ -13,14 +13,6 @@ Three endpoints are available after starting the application:
 * POST /api/import consumes multipart/form-data
 * GET /api/room/{roomNumber} produces JSON
 * GET /api/room produces JSON
-
-The acceptance criteria are not completely clear regarding the following question:
-Can a room be searched for by person details? 
-For example, shall I be able to enter a person's name/ldap and the application returns the room?
-
-In case the above mentioned criteria is required, a quick solution was implemented in the third endpoint.
-It accepts the optional query parameter "ldapUser". 
-Searching by "ldapUser" returns a list of all rooms that have a person assigned whose ldap user name contains the given string.
  
 If the possibility to search for user details is a required feature, two additional endpoints should be implemented:
  
