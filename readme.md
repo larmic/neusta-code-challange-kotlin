@@ -1,4 +1,7 @@
-# Neusta Code Challenge
+# Neusta Code Challenge 
+
+[![Build Status](https://travis-ci.org/larmic/neusta-code-challange-kotlin.svg?branch=development)](https://travis-ci.org/larmic/neusta-code-challange-kotlin)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Introduction
 
