@@ -3,7 +3,6 @@ package de.neusta.ncc.infrastructure
 import de.neusta.ncc.application.RoomImportService
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
-import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.dto.ErrorMessageDto
 import de.neusta.ncc.infrastructure.dto.ImportResultDto
@@ -54,8 +53,12 @@ class UploadController @Autowired constructor(
             return buildError(3, e.message)
         } catch (e: CsvPersonNotValidException) {
             return buildError(4, e.message)
-        } catch (e: RoomNumberNotValidException) {
-            return buildError(6, e.message)
+        } catch (e: AssertionError) {
+            val message = e.message
+            if (message != null && message.startsWith("Room with number") && message.endsWith("must have 4 arbitrary characters.")) {
+                return buildError(6, e.message)
+            }
+            return buildError(0, e.message)
         }
 
     }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.lang.AssertionError
 import java.util.*
 
 /**
@@ -21,7 +22,7 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @Throws(FileImportException::class, EmptyFileImportException::class)
+    @Throws(FileImportException::class, EmptyFileImportException::class, AssertionError::class)
     fun map(file: MultipartFile): List<Room> {
         try {
             val csvData = loadDate(file)
@@ -69,17 +70,16 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
         return mapper.readerFor(Array<String>::class.java).readValues(csvData)
     }
 
-    @Throws(CsvPersonNotValidException::class)
+    @Throws(CsvPersonNotValidException::class, AssertionError::class)
     private fun convertCsvImportRooms(simpleImportRooms: List<SimpleImportRoom>): List<Room> {
-        return simpleImportRooms.map { r -> r.convertToRoom() }
+        return simpleImportRooms.map { it.convertToRoom() }
     }
 
     private inner class SimpleImportRoom internal constructor(private val room: String, private val persons: List<String>) {
 
-        @Throws(CsvPersonNotValidException::class)
+        @Throws(CsvPersonNotValidException::class, AssertionError::class)
         internal fun convertToRoom(): Room {
-            val people = persons
-                    .map { p -> csvPersonToPersonMapper.map(p) }
+            val people = persons.map { csvPersonToPersonMapper.map(it) }
             return Room(roomNumber = room, persons = people)
         }
     }

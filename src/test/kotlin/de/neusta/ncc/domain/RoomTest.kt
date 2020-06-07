@@ -10,11 +10,12 @@ import org.junit.jupiter.params.provider.ValueSource
 @DisplayName("Create room with room")
 class RoomTest {
 
-    @Test
-    fun `contains no people`() {
-        val room = Room(roomNumber = "1234")
+    @ParameterizedTest
+    @ValueSource(strings = ["1234", "ABCF", "/[]{", "ÄÜÖ?"])
+    fun `contains no people`(number: String) {
+        val room = Room(roomNumber = number)
 
-        assertThat(room.roomNumber).isEqualTo("1234")
+        assertThat(room.roomNumber).isEqualTo(number)
         assertThat(room.persons).isEmpty()
         assertThat(room.persons).isNotNull
     }
@@ -33,9 +34,22 @@ class RoomTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["", " ", "   "])
-    fun `has empty room number`(number: String) {
+    @ValueSource(strings = ["", " ", "   ", "", "1", "12", "123", "AB", "/"])
+    fun `number has less than 4 arbitrary characters`(number: String) {
         val exception = assertThrows<AssertionError> { Room(roomNumber = number) }
-        assertThat(exception.message).isEqualTo("Room number must not be empty")
+        assertThat(exception.message).isEqualTo("Room with number $number must have 4 arbitrary characters.")
+    }
+
+    @Test
+    internal fun `number has 4 empty characters`() {
+        val exception = assertThrows<AssertionError> { Room(roomNumber = "    ") }
+        assertThat(exception.message).isEqualTo("Room with number      must have 4 arbitrary characters.")
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["1234Z", "ABCFZZ", "/[]{ZZZ", "ÄÜÖ?ZZZZ"])
+    fun `number has more than 4 arbitrary characters`(number: String) {
+        val exception = assertThrows<AssertionError> { Room(roomNumber = number) }
+        assertThat(exception.message).isEqualTo("Room with number $number must have 4 arbitrary characters.")
     }
 }

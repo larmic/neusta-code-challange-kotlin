@@ -12,6 +12,7 @@ import org.mockito.Mockito.mock
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.lang.AssertionError
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -64,6 +65,13 @@ class CsvImportMapperTest {
                         tuple("Mabelle", "Tengue", "mtengue"),
                         tuple("Ralf", "Schmidt", "rschmidt")
                 )
+    }
+
+    @Test
+    fun testMapInvalidRoomNumber() {
+        val csv = "room_number_not_valid.csv"
+        val error = assertThrows<AssertionError> { mapper.map(MockMultipartFile(csv, Files.readAllBytes(Paths.get("src/test/resources/upload/$csv")))) }
+        assertThat(error.message).isEqualTo("Room with number 111 must have 4 arbitrary characters.")
     }
 
     /**

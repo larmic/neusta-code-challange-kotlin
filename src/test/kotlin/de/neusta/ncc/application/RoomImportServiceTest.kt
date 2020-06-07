@@ -1,11 +1,9 @@
 package de.neusta.ncc.application
 
 import de.neusta.ncc.application.validator.LdapUserUniqueValidator
-import de.neusta.ncc.application.validator.RoomNumberValidator
 import de.neusta.ncc.application.validator.RoomUniqueValidator
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
-import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import de.neusta.ncc.domain.Person
 import de.neusta.ncc.domain.PersonTitle
 import de.neusta.ncc.domain.Room
@@ -13,13 +11,11 @@ import de.neusta.ncc.infrastructure.CacheRoomRepository
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.*
 
 class RoomImportServiceTest {
 
     private val roomRepository = CacheRoomRepository()
     private var roomImportService = RoomImportService(
-            RoomNumberValidator(),
             RoomUniqueValidator(),
             LdapUserUniqueValidator(),
             roomRepository)
@@ -49,16 +45,6 @@ class RoomImportServiceTest {
                         tuple("Alexander James", "Cole", "acole"),
                         tuple("Samin", "Ölker", "soelker")
                 )
-    }
-
-    @Test
-    fun testImportWithWrongRoomNumberLength() {
-        val room = Room(roomNumber = "100", persons = listOf(susanne, uwe))
-
-        val exception = assertThrows<RoomNumberNotValidException> { roomImportService.importRooms(listOf(room)) }
-
-        assertThat(exception.message).isEqualTo("Room with number 100 must have 4 arbitrary characters.")
-        assertThat(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
     }
 
     @Test
