@@ -8,19 +8,14 @@ enum class PersonAddition(val label: String) {
 
     companion object {
         fun valueOfByLabel(label: String?): PersonAddition? {
-            return if (isLabelEmpty(label)) {
+            return if (label.isNullOrBlank()) {
                 null
             } else {
-                findAddition(label!!) ?: throw IllegalArgumentException(String.format("Person addition %label is not supported", label))
+                label.mapToAddition() ?: throw IllegalArgumentException("Person addition $label is not supported")
             }
         }
 
-        private fun findAddition(label: String): PersonAddition? {
-            return PersonAddition.values().firstOrNull { addition -> addition.label.toLowerCase() == label.trim { it <= ' ' }.toLowerCase() }
-        }
-
-        private fun isLabelEmpty(label: String?): Boolean {
-            return label == null || label.isEmpty() || label.trim { it <= ' ' }.isEmpty()
-        }
+        private fun String.mapToAddition() = values().firstOrNull { it.label == this.trimAndLowercase() }
+        private fun String.trimAndLowercase() = this.trim { it <= ' ' }.toLowerCase()
     }
 }

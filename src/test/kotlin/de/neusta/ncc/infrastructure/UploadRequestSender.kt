@@ -26,7 +26,7 @@ class UploadRequestSender {
     }
 
     private fun buildFileResource(file: String?): FileSystemResource? {
-        return if (file != null) FileSystemResource("src/test/resources/upload/" + file) else null
+        return if (file != null) FileSystemResource("src/test/resources/upload/$file") else null
     }
 
     private fun buildHttpEntity(fileSystemResource: FileSystemResource?): HttpEntity<*> {

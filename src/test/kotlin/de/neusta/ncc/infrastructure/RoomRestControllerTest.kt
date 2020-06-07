@@ -1,30 +1,29 @@
 package de.neusta.ncc.infrastructure
 
+import com.ninjasquad.springmockk.MockkBean
 import de.neusta.ncc.domain.Room
 import de.neusta.ncc.domain.RoomRepository
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.dto.RoomDto
 import de.neusta.ncc.infrastructure.mapper.CsvPersonToPersonMapper
+import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.reset
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class RoomControllerTest {
+class RoomRestControllerTest {
 
     @Autowired
     private lateinit var testRestTemplate: TestRestTemplate
@@ -32,19 +31,17 @@ class RoomControllerTest {
     @Autowired
     private lateinit var csvPersonToPersonMapper: CsvPersonToPersonMapper
 
-    @MockBean
+    @MockkBean
     private lateinit var roomRepositoryMock: RoomRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
-        `when`(roomRepositoryMock.getRooms()).thenReturn(listOf(
+        every { (roomRepositoryMock.getRooms()) } returns listOf(
                 createRoom("1000", "Susanne Moog (smoog)"),
                 createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
-        ))
-        `when`(roomRepositoryMock.findByRoomNumber("1000")).thenReturn(createRoom("1000", "Susanne Moog (smoog)"))
-        `when`(roomRepositoryMock.findByRoomNumber("1001")).thenReturn(createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)"))
-
-        `when`(roomRepositoryMock.findByLikeLdapUser("smoog")).thenReturn(listOf(createRoom("1000", "Susanne Moog (smoog)")))
+        )
+        every { roomRepositoryMock.findByRoomNumber("1000") } returns createRoom("1000", "Susanne Moog (smoog)")
+        every { roomRepositoryMock.findByRoomNumber("1001") } returns createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
     }
 
     @Test
@@ -55,31 +52,16 @@ class RoomControllerTest {
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
-        assertThat(getRoomFrom(exchange.body, "1001")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
                         Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
-                )
-    }
-
-    @Test
-    fun `find all rooms and filter by ldap user`() {
-        val exchange = testRestTemplate.exchange("/api/room?ldapUser=smoog", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
-
-        })
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(exchange.body).extracting("room").containsExactly("1000")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
     }
 
@@ -91,12 +73,12 @@ class RoomControllerTest {
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
-        assertThat(getRoomFrom(exchange.body, "1001")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
@@ -106,7 +88,7 @@ class RoomControllerTest {
 
     @Test
     fun testGetAllRoomsWithNoRoomsExists() {
-        reset(roomRepositoryMock)
+        every { (roomRepositoryMock.getRooms()) } returns emptyList()
 
         val exchange = testRestTemplate.exchange("/api/room", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
 
@@ -121,8 +103,8 @@ class RoomControllerTest {
     fun testGetRoom() {
         val room1000 = testRestTemplate.exchange("/api/room/1000", HttpMethod.GET, null, RoomDto::class.java)
         assertThat(room1000.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(room1000.body.room).isEqualTo("1000")
-        assertThat(room1000.body.people)
+        assertThat(room1000.body!!.room).isEqualTo("1000")
+        assertThat(room1000.body!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
@@ -130,8 +112,8 @@ class RoomControllerTest {
 
         val room1001 = testRestTemplate.exchange("/api/room/1001", HttpMethod.GET, null, RoomDto::class.java)
         assertThat(room1001.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(room1001.body.room).isEqualTo("1001")
-        assertThat(room1001.body.people)
+        assertThat(room1001.body!!.room).isEqualTo("1001")
+        assertThat(room1001.body!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
@@ -164,6 +146,8 @@ class RoomControllerTest {
 
     @Test
     fun testGetRoomWithNotFound() {
+        every { (roomRepositoryMock.findByRoomNumber("1015")) } returns null
+
         val exchange = testRestTemplate.exchange("/api/room/1015", HttpMethod.GET, null, String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -185,8 +169,8 @@ class RoomControllerTest {
     }
 
     private fun createRoom(roomNumber: String, vararg persons: String): Room {
-        val per = persons.map { p -> csvPersonToPersonMapper.map(p) }
-        return Room.RoomBuilder(roomNumber).persons(per).build()
+        val per = persons.map { csvPersonToPersonMapper.map(it) }
+        return Room(roomNumber = roomNumber, persons = per)
     }
 
     private fun getRoomFrom(rooms: List<RoomDto>, roomNumber: String): RoomDto? {
@@ -200,10 +184,10 @@ class RoomControllerTest {
         val exchange = testRestTemplate.exchange(url, httpMethod, HttpEntity.EMPTY, DefaultSpringErrorDto::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
-        assertThat(exchange.body.timestamp).isNotEmpty()
-        assertThat(exchange.body.status).isEqualTo("405")
-        assertThat(exchange.body.error).isEqualTo("Method Not Allowed")
-        assertThat(exchange.body.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
-        assertThat(exchange.body.path).isEqualTo(url)
+        assertThat(exchange.body!!.timestamp).isNotEmpty()
+        assertThat(exchange.body!!.status).isEqualTo("405")
+        assertThat(exchange.body!!.error).isEqualTo("Method Not Allowed")
+        assertThat(exchange.body!!.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
+        assertThat(exchange.body!!.path).isEqualTo(url)
     }
 }

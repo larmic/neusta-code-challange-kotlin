@@ -1,18 +1,11 @@
 package de.neusta.ncc.domain
 
-data class Room constructor(val roomNumber: String, val persons: List<Person>) {
+class Room(val roomNumber: String,
+           val persons: List<Person> = emptyList()) {
 
-    class RoomBuilder(private val roomNumber: String) {
-        private var persons = emptyList<Person>()
-
-        fun persons(persons: List<Person>): RoomBuilder {
-            this.persons = persons.toList()
-            return this
-        }
-
-        fun build(): Room {
-            return Room(roomNumber, persons)
-        }
+    init {
+        assert(roomNumber.validateRoomNumber()) { "Room with number $roomNumber must have 4 arbitrary characters." }
     }
 
+    private fun String.validateRoomNumber() = this.length == 4 && this.isNotBlank()
 }

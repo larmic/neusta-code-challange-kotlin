@@ -6,32 +6,18 @@ import de.neusta.ncc.domain.PersonTitle
 import de.neusta.ncc.domain.Room
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
-import org.junit.Before
-import org.junit.Test
-import java.util.*
+import org.junit.jupiter.api.Test
 
 class RoomMapperTest {
 
-    private lateinit var roomMapper: RoomMapper
-
-    @Before
-    fun setUp() {
-        roomMapper = RoomMapper()
-    }
+    private var roomMapper = RoomMapper()
 
     @Test
     fun mapToDto() {
-        val person1 = Person.PersonBuilder("Leif", "Genzmer", "lgenzmer")
-                .title(PersonTitle.DR)
-                .secondFirstName("Arne")
-                .build()
-        val person2 = Person.PersonBuilder("Samin", "Ölker", "soelker")
-                .addition(PersonAddition.DE)
-                .build()
+        val person1 = Person(firstName = "Leif", secondFirstName = "Arne", lastName = "Genzmer", ldapUser = "lgenzmer", title = PersonTitle.DR)
+        val person2 = Person(firstName = "Samin", lastName = "Ölker", ldapUser = "soelker", addition = PersonAddition.DE)
 
-        val room = Room.RoomBuilder("1103")
-                .persons(Arrays.asList(person1, person2))
-                .build()
+        val room = Room(roomNumber = "1103", persons = listOf(person1, person2))
 
         val (people, room1) = roomMapper.mapToDto(room)
 
@@ -46,7 +32,7 @@ class RoomMapperTest {
 
     @Test
     fun mapToDtoWithRoomIsEmpty() {
-        val room = Room.RoomBuilder("1104").build()
+        val room = Room(roomNumber = "1104")
 
         val (people, room1) = roomMapper.mapToDto(room)
 

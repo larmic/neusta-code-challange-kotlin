@@ -29,11 +29,14 @@ class CsvPersonToPersonMapper {
     fun map(csvImportPerson: String): Person {
         val groups = pattern.matchEntire(csvImportPerson)?.groups
         if (pattern.matches(csvImportPerson)) {
-            return Person.PersonBuilder(groups!![3]!!.value, groups[6]!!.value, groups[7]!!.value)
-                    .title(PersonTitle.valueOfByLabel(groups[2]?.value))
-                    .secondFirstName(groups[4]?.value)
-                    .addition(PersonAddition.valueOfByLabel(groups[5]?.value))
-                    .build()
+            return Person(
+                    firstName = groups!![3]!!.value,
+                    secondFirstName = groups[4]?.value,
+                    lastName = groups[6]!!.value,
+                    ldapUser = groups[7]!!.value,
+                    title = PersonTitle.valueOfByLabel(groups[2]?.value),
+                    addition = PersonAddition.valueOfByLabel(groups[5]?.value)
+            )
         }
 
         throw CsvPersonNotValidException(csvImportPerson)

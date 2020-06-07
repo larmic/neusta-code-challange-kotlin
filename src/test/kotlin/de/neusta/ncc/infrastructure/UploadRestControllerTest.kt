@@ -1,47 +1,39 @@
 package de.neusta.ncc.infrastructure
 
+import com.ninjasquad.springmockk.MockkBean
 import de.neusta.ncc.application.RoomImportService
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
-import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.mapper.CsvImportMapper
 import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
-import de.neusta.ncc.infrastructure.mapper.exception.EmptyFileImportException
-import de.neusta.ncc.infrastructure.mapper.exception.FileImportException
+import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyList
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doThrow
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.web.multipart.MultipartFile
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.lang.AssertionError
 
 /**
  * Mapping and validation tests of {@link UploadController}.
  * <p>
  * Mocks inner mapper and services to be loosely coupled from core logic.
  */
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UploadControllerTest {
+class UploadRestControllerTest {
 
     @Autowired
     private lateinit var uploadRequestSender: UploadRequestSender
 
-    @MockBean
+    @MockkBean(relaxed = true)
     private lateinit var roomImportServiceMock: RoomImportService
 
-    @MockBean
+    @MockkBean(relaxed = true)
     private lateinit var csvImportMapperMock: CsvImportMapper
 
     @Test
@@ -53,17 +45,6 @@ class UploadControllerTest {
     }
 
     @Test
-    @Ignore
-    fun testUploadWithFileIsEmpty() {
-        `when`(csvImportMapperMock.map(ArgumentMatchers.any(MultipartFile::class.java))).thenThrow(EmptyFileImportException())
-
-        val exchange = uploadRequestSender.sendUploadRequest("empty.csv", String::class.java)
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":0,\"message\":\"Required request part 'file' is empty\"}")
-    }
-
-    @Test
     fun testUploadWithFileIsNull() {
         val exchange = uploadRequestSender.sendUploadRequest(null, String::class.java)
 
@@ -72,19 +53,8 @@ class UploadControllerTest {
     }
 
     @Test
-    @Ignore
-    fun testUploadWithCsvImportMapperThrowsGeneralImportException() {
-        `when`(csvImportMapperMock.map(any(MultipartFile::class.java))).thenThrow(FileImportException())
-
-        val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":0,\"message\":\"Access error when get bytes of file.\"}")
-    }
-
-    @Test
     fun testUploadWithCsvImportPersonIsNotValid() {
-        doThrow(CsvPersonNotValidException("test")).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws CsvPersonNotValidException("test")
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 
@@ -94,17 +64,17 @@ class UploadControllerTest {
 
     @Test
     fun testUploadWithWrongRoomNumberLength() {
-        doThrow(RoomNumberNotValidException("100")).`when`(roomImportServiceMock).importRooms(anyList())
+        every { csvImportMapperMock.map(any()) } throws AssertionError("Room with number 111 must have 4 arbitrary characters.")
 
-        val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
+        val exchange = uploadRequestSender.sendUploadRequest("room_number_not_valid.csv", String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":6,\"message\":\"Room with number 100 must have 4 arbitrary characters.\"}")
+        assertThat(exchange.body).isEqualTo("{\"code\":6,\"message\":\"Room with number 111 must have 4 arbitrary characters.\"}")
     }
 
     @Test
     fun testUploadWithRoomNumberIsNotUnique() {
-        doThrow(RoomIsNotUniqueException()).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws RoomIsNotUniqueException()
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 
@@ -114,7 +84,7 @@ class UploadControllerTest {
 
     @Test
     fun testUploadWithPersonIsNotUnique() {
-        doThrow(LdapUserIsNotUniqueException()).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws LdapUserIsNotUniqueException()
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 
@@ -133,11 +103,11 @@ class UploadControllerTest {
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", httpMethod, DefaultSpringErrorDto::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
-        assertThat(exchange.body.timestamp).isNotEmpty()
-        assertThat(exchange.body.status).isEqualTo("405")
-        assertThat(exchange.body.error).isEqualTo("Method Not Allowed")
-        assertThat(exchange.body.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
-        assertThat(exchange.body.path).isEqualTo("/api/import")
+        assertThat(exchange.body?.timestamp).isNotEmpty()
+        assertThat(exchange.body?.status).isEqualTo("405")
+        assertThat(exchange.body?.error).isEqualTo("Method Not Allowed")
+        assertThat(exchange.body?.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
+        assertThat(exchange.body?.path).isEqualTo("/api/import")
     }
 
 }

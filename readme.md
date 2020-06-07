@@ -1,8 +1,11 @@
-# Neusta Code Challenge
+# Neusta Code Challenge 
+
+[![Build Status](https://travis-ci.org/larmic/neusta-code-challange-kotlin.svg?branch=development)](https://travis-ci.org/larmic/neusta-code-challange-kotlin)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Introduction
 
-This is a submission to the neusta code challenge 2017. 
+This is a submission to the [neusta code challenge 2017](misc/codeChallenge.pdf) [Git Tag v2017-MARCH](https://github.com/larmic/neusta-code-challange-kotlin/releases/tag/v2017-MARCH). 
 The following technologies have been used for the implementation: maven, java, spring boot, swagger and optional docker.
 
 Three endpoints are available after starting the application:
@@ -10,14 +13,6 @@ Three endpoints are available after starting the application:
 * POST /api/import consumes multipart/form-data
 * GET /api/room/{roomNumber} produces JSON
 * GET /api/room produces JSON
-
-The acceptance criteria are not completely clear regarding the following question:
-Can a room be searched for by person details? 
-For example, shall I be able to enter a person's name/ldap and the application returns the room?
-
-In case the above mentioned criteria is required, a quick solution was implemented in the third endpoint.
-It accepts the optional query parameter "ldapUser". 
-Searching by "ldapUser" returns a list of all rooms that have a person assigned whose ldap user name contains the given string.
  
 If the possibility to search for user details is a required feature, two additional endpoints should be implemented:
  
@@ -39,8 +34,8 @@ Due to time constrains no ARC42 documentation is created.
 
 ## Requirements
 
-* Java 1.8
-* Maven >= 3.2.1
+* Java 11
+* Maven >= 3.6.x
 * Docker optional
 
 ## Build and run

@@ -3,7 +3,8 @@ package de.neusta.ncc.application.validator
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class LdapUserUniqueValidatorTest {
@@ -14,26 +15,21 @@ class LdapUserUniqueValidatorTest {
     fun validate() {
         validator.validate(emptyList())
         validator.validate(listOf("dreuschling"))
-        validator.validate(Arrays.asList("dreuschling", "rsheho"))
-        validator.validate(Arrays.asList("dreuschling", "ahaeusler"))
-        validator.validate(Arrays.asList("dreuschling", "rsheho", "ahaeusler"))
+        validator.validate(listOf("dreuschling", "rsheho"))
+        validator.validate(listOf("dreuschling", "ahaeusler"))
+        validator.validate(listOf("dreuschling", "rsheho", "ahaeusler"))
     }
 
     @Test
     fun validateWithDuplicates() {
-        assertException(Arrays.asList("dreuschling", "dreuschling"))
-        assertException(Arrays.asList("dreuschling", "rsheho", "dreuschling"))
-        assertException(Arrays.asList("dreuschling", "rsheho", "rsheho", "ahaeusler"))
+        assertException(listOf("dreuschling", "dreuschling"))
+        assertException(listOf("dreuschling", "rsheho", "dreuschling"))
+        assertException(listOf("dreuschling", "rsheho", "rsheho", "ahaeusler"))
     }
 
     private fun assertException(rooms: List<String>) {
-        try {
-            validator.validate(rooms)
-            fail("Should throw exception")
-        } catch (e: LdapUserIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("LDAP users should only appear once.")
-        }
-
+        val exception = assertThrows<LdapUserIsNotUniqueException> { validator.validate(rooms) }
+        assertThat(exception.message).isEqualTo("LDAP users should only appear once.")
     }
 
 }
