@@ -3,7 +3,9 @@ package de.neusta.ncc.domain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.util.*
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Create room with room")
 class RoomTest {
@@ -30,4 +32,10 @@ class RoomTest {
         assertThat(room.persons).containsExactlyInAnyOrder(susanne, uwe, alex, florenz)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = ["", " ", "   "])
+    fun `has empty room number`(number: String) {
+        val exception = assertThrows<AssertionError> { Room(roomNumber = number) }
+        assertThat(exception.message).isEqualTo("Room number must not be empty")
+    }
 }
