@@ -3,6 +3,8 @@ package de.neusta.ncc.domain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class PersonAdditionTest {
 
@@ -16,10 +18,10 @@ class PersonAdditionTest {
         assertThat(PersonAddition.valueOfByLabel(" de ")).isEqualTo(PersonAddition.DE)
     }
 
-    @Test
-    fun `get value by label when label is empty`() {
-        assertThat(PersonAddition.valueOfByLabel("")).isNull()
-        assertThat(PersonAddition.valueOfByLabel(" ")).isNull()
+    @ParameterizedTest
+    @ValueSource(strings = ["", " ", "   "])
+    fun `get value by label when label is empty`(label: String) {
+        assertThat(PersonAddition.valueOfByLabel(label)).isNull()
     }
 
     @Test
