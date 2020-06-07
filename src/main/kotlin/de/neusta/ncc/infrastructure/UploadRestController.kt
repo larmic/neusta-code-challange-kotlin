@@ -67,8 +67,8 @@ class UploadRestController(private var csvImportMapper: CsvImportMapper,
     }
 
     private fun buildError(errorCode: Int, errorMessage: String?): ResponseEntity<ErrorMessageDto> {
-        val errorMessageDto1 = ErrorMessageDto(errorCode, errorMessage ?: "Unknown error")
-        return ResponseEntity(errorMessageDto1, HttpStatus.BAD_REQUEST)
+        val dto = ErrorMessageDto(errorCode, errorMessage ?: "Unknown error")
+        return ResponseEntity(dto, HttpStatus.BAD_REQUEST)
     }
 
 }

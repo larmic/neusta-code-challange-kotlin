@@ -15,16 +15,16 @@ class LdapUserUniqueValidatorTest {
     fun validate() {
         validator.validate(emptyList())
         validator.validate(listOf("dreuschling"))
-        validator.validate(Arrays.asList("dreuschling", "rsheho"))
-        validator.validate(Arrays.asList("dreuschling", "ahaeusler"))
-        validator.validate(Arrays.asList("dreuschling", "rsheho", "ahaeusler"))
+        validator.validate(listOf("dreuschling", "rsheho"))
+        validator.validate(listOf("dreuschling", "ahaeusler"))
+        validator.validate(listOf("dreuschling", "rsheho", "ahaeusler"))
     }
 
     @Test
     fun validateWithDuplicates() {
-        assertException(Arrays.asList("dreuschling", "dreuschling"))
-        assertException(Arrays.asList("dreuschling", "rsheho", "dreuschling"))
-        assertException(Arrays.asList("dreuschling", "rsheho", "rsheho", "ahaeusler"))
+        assertException(listOf("dreuschling", "dreuschling"))
+        assertException(listOf("dreuschling", "rsheho", "dreuschling"))
+        assertException(listOf("dreuschling", "rsheho", "rsheho", "ahaeusler"))
     }
 
     private fun assertException(rooms: List<String>) {
