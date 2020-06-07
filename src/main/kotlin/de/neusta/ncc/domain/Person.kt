@@ -10,7 +10,11 @@ class Person(firstName: String,
     val lastName: String = lastName.normalizeName()
     val ldapUser: String = ldapUser.normalizeName()
 
-    // TODO verify on init block required fields are not empty
+    init {
+        assert(firstName.isNotBlank()) { "First name must not be empty" }
+        assert(lastName.isNotBlank()) { "Last name must not be empty" }
+        assert(ldapUser.isNotBlank()) { "LDAP user must not be empty" }
+    }
 
     override fun toString(): String {
         val titleAsString = title?.label ?: ""
