@@ -55,12 +55,12 @@ class RoomControllerTest {
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
-        assertThat(getRoomFrom(exchange.body, "1001")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
@@ -76,7 +76,7 @@ class RoomControllerTest {
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactly("1000")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
@@ -91,12 +91,12 @@ class RoomControllerTest {
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
-        assertThat(getRoomFrom(exchange.body, "1000")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
-        assertThat(getRoomFrom(exchange.body, "1001")!!.people)
+        assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
@@ -121,8 +121,8 @@ class RoomControllerTest {
     fun testGetRoom() {
         val room1000 = testRestTemplate.exchange("/api/room/1000", HttpMethod.GET, null, RoomDto::class.java)
         assertThat(room1000.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(room1000.body.room).isEqualTo("1000")
-        assertThat(room1000.body.people)
+        assertThat(room1000.body!!.room).isEqualTo("1000")
+        assertThat(room1000.body!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
@@ -130,8 +130,8 @@ class RoomControllerTest {
 
         val room1001 = testRestTemplate.exchange("/api/room/1001", HttpMethod.GET, null, RoomDto::class.java)
         assertThat(room1001.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(room1001.body.room).isEqualTo("1001")
-        assertThat(room1001.body.people)
+        assertThat(room1001.body!!.room).isEqualTo("1001")
+        assertThat(room1001.body!!.people)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
@@ -200,10 +200,10 @@ class RoomControllerTest {
         val exchange = testRestTemplate.exchange(url, httpMethod, HttpEntity.EMPTY, DefaultSpringErrorDto::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
-        assertThat(exchange.body.timestamp).isNotEmpty()
-        assertThat(exchange.body.status).isEqualTo("405")
-        assertThat(exchange.body.error).isEqualTo("Method Not Allowed")
-        assertThat(exchange.body.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
-        assertThat(exchange.body.path).isEqualTo(url)
+        assertThat(exchange.body!!.timestamp).isNotEmpty()
+        assertThat(exchange.body!!.status).isEqualTo("405")
+        assertThat(exchange.body!!.error).isEqualTo("Method Not Allowed")
+        assertThat(exchange.body!!.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
+        assertThat(exchange.body!!.path).isEqualTo(url)
     }
 }

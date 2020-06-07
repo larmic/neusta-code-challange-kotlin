@@ -1,6 +1,5 @@
 package de.neusta.ncc.infrastructure
 
-import de.neusta.ncc.domain.Room
 import de.neusta.ncc.domain.RoomRepository
 import de.neusta.ncc.infrastructure.dto.ImportResultDto
 import org.assertj.core.api.Assertions.assertThat
@@ -30,9 +29,9 @@ class UploadControllerIntegrationTest {
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", ImportResultDto::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(exchange.body.uploadedFileName).isEqualTo("simple.csv")
+        assertThat(exchange.body!!.uploadedFileName).isEqualTo("simple.csv")
 
-        assertThat<Room>(roomRepository.getRooms()).hasSize(2)
+        assertThat(roomRepository.getRooms()).hasSize(2)
 
         val room1111 = roomRepository.findByRoomNumber("1111")
         assertThat(room1111).isNotNull()
