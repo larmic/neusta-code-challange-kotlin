@@ -3,9 +3,9 @@ package de.neusta.ncc.domain
 class Person(firstName: String,
              secondFirstName: String? = null,
              lastName: String,
+             ldapUser: String,
              val title: PersonTitle? = null,
-             val addition: PersonAddition? = null,
-             ldapUser: String) {
+             val addition: PersonAddition? = null) {
     val firstName: String = mergeFirstAndSecondName(secondFirstName, firstName)
     val lastName: String = lastName.normalizeName()
     val ldapUser: String = ldapUser.normalizeName()
