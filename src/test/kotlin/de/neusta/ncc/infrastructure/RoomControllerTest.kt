@@ -1,20 +1,19 @@
 package de.neusta.ncc.infrastructure
 
+import com.ninjasquad.springmockk.MockkBean
 import de.neusta.ncc.domain.Room
 import de.neusta.ncc.domain.RoomRepository
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.dto.RoomDto
 import de.neusta.ncc.infrastructure.mapper.CsvPersonToPersonMapper
+import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.reset
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -32,19 +31,18 @@ class RoomControllerTest {
     @Autowired
     private lateinit var csvPersonToPersonMapper: CsvPersonToPersonMapper
 
-    @MockBean
+    @MockkBean
     private lateinit var roomRepositoryMock: RoomRepository
 
     @BeforeEach
     fun setUp() {
-        `when`(roomRepositoryMock.getRooms()).thenReturn(listOf(
+        every { (roomRepositoryMock.getRooms()) } returns listOf(
                 createRoom("1000", "Susanne Moog (smoog)"),
                 createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
-        ))
-        `when`(roomRepositoryMock.findByRoomNumber("1000")).thenReturn(createRoom("1000", "Susanne Moog (smoog)"))
-        `when`(roomRepositoryMock.findByRoomNumber("1001")).thenReturn(createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)"))
-
-        `when`(roomRepositoryMock.findByLikeLdapUser("smoog")).thenReturn(listOf(createRoom("1000", "Susanne Moog (smoog)")))
+        )
+        every { roomRepositoryMock.findByRoomNumber("1000") } returns createRoom("1000", "Susanne Moog (smoog)")
+        every { roomRepositoryMock.findByRoomNumber("1001") } returns createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
+        every { roomRepositoryMock.findByLikeLdapUser("smoog") } returns listOf(createRoom("1000", "Susanne Moog (smoog)"))
     }
 
     @Test
@@ -106,7 +104,7 @@ class RoomControllerTest {
 
     @Test
     fun testGetAllRoomsWithNoRoomsExists() {
-        reset(roomRepositoryMock)
+        every { (roomRepositoryMock.getRooms()) } returns emptyList()
 
         val exchange = testRestTemplate.exchange("/api/room", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
 
@@ -164,6 +162,8 @@ class RoomControllerTest {
 
     @Test
     fun testGetRoomWithNotFound() {
+        every { (roomRepositoryMock.findByRoomNumber("1015")) } returns null
+
         val exchange = testRestTemplate.exchange("/api/room/1015", HttpMethod.GET, null, String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.NOT_FOUND)

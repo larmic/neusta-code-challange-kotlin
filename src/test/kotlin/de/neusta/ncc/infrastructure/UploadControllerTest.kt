@@ -1,20 +1,18 @@
 package de.neusta.ncc.infrastructure
 
+import com.ninjasquad.springmockk.MockkBean
 import de.neusta.ncc.application.RoomImportService
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.mapper.CsvImportMapper
 import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
+import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyList
-import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -32,10 +30,10 @@ class UploadControllerTest {
     @Autowired
     private lateinit var uploadRequestSender: UploadRequestSender
 
-    @MockBean
+    @MockkBean(relaxed = true)
     private lateinit var roomImportServiceMock: RoomImportService
 
-    @MockBean
+    @MockkBean(relaxed = true)
     private lateinit var csvImportMapperMock: CsvImportMapper
 
     @Test
@@ -56,7 +54,7 @@ class UploadControllerTest {
 
     @Test
     fun testUploadWithCsvImportPersonIsNotValid() {
-        doThrow(CsvPersonNotValidException("test")).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws CsvPersonNotValidException("test")
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 
@@ -65,19 +63,18 @@ class UploadControllerTest {
     }
 
     @Test
-    @Disabled("Mocking error")
     fun testUploadWithWrongRoomNumberLength() {
-        doThrow(AssertionError("Room with number 111 must have 4 arbitrary characters.")).`when`(csvImportMapperMock).map(any())
+        every { csvImportMapperMock.map(any()) } throws AssertionError("Room with number 111 must have 4 arbitrary characters.")
 
         val exchange = uploadRequestSender.sendUploadRequest("room_number_not_valid.csv", String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":6,\"message\":\"Room with number 100 must have 4 arbitrary characters.\"}")
+        assertThat(exchange.body).isEqualTo("{\"code\":6,\"message\":\"Room with number 111 must have 4 arbitrary characters.\"}")
     }
 
     @Test
     fun testUploadWithRoomNumberIsNotUnique() {
-        doThrow(RoomIsNotUniqueException()).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws RoomIsNotUniqueException()
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 
@@ -87,7 +84,7 @@ class UploadControllerTest {
 
     @Test
     fun testUploadWithPersonIsNotUnique() {
-        doThrow(LdapUserIsNotUniqueException()).`when`(roomImportServiceMock).importRooms(anyList())
+        every { roomImportServiceMock.importRooms(any()) } throws LdapUserIsNotUniqueException()
 
         val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
 

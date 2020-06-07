@@ -4,11 +4,8 @@ import de.neusta.ncc.infrastructure.mapper.exception.EmptyFileImportException
 import de.neusta.ncc.infrastructure.mapper.exception.FileImportException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
@@ -79,12 +76,13 @@ class CsvImportMapperTest {
      * exception will be handled correctly.
      */
     @Test
-    @Disabled
     fun testMapWithGetBytesThrowsIOException() {
-        val multipartFileMock = mock(MultipartFile::class.java)
-        `when`(multipartFileMock.bytes).thenThrow(IOException())
-        `when`(multipartFileMock.isEmpty).thenReturn(false)
+        assertThrows<FileImportException> { mapper.map(BytesThrowsExceptionMultipartFile()) }
+    }
 
-        assertThrows<FileImportException> { mapper.map(multipartFileMock) }
+    class BytesThrowsExceptionMultipartFile : MockMultipartFile("bytes-throws-exception", Files.readAllBytes(Paths.get("src/test/resources/upload/simple.csv"))) {
+        override fun getBytes(): ByteArray {
+            throw IOException()
+        }
     }
 }
