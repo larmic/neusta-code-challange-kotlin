@@ -8,22 +8,15 @@ data class Person constructor(
         val ldapUser: String) {
 
     override fun toString(): String {
-        val stringBuilder = StringBuilder()
+        val titleAsString = title?.label ?: ""
+        val additionAsString = addition?.label ?: ""
 
-        if (title != null) {
-            stringBuilder.append(title.label).append(" ")
-        }
-
-        stringBuilder.append(firstName).append(" ")
-
-        if (addition != null) {
-            stringBuilder.append(addition.label).append(" ")
-        }
-
-        stringBuilder.append(lastName).append(" (").append(ldapUser).append(")")
-
-        return stringBuilder.toString()
+        return "$titleAsString $firstName $additionAsString $lastName ($ldapUser)"
+                .removeDuplicatedWhiteSpaces()
+                .trim()
     }
+
+    private fun String.removeDuplicatedWhiteSpaces() = this.replace("\\s+".toRegex(), " ")
 
     class PersonBuilder(private val firstName: String, private val lastName: String, private val ldapUser: String) {
         private var secondFirstName: String? = null
