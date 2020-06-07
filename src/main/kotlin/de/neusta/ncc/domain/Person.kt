@@ -6,9 +6,9 @@ class Person(firstName: String,
              val title: PersonTitle? = null,
              val addition: PersonAddition? = null,
              ldapUser: String) {
-    val firstName: String = if (secondFirstName.isNullOrBlank()) firstName.trim { it <= ' ' } else "${firstName.trim { it <= ' ' }} ${secondFirstName.trim { it <= ' ' }}"
-    val lastName: String = lastName.trim { it <= ' ' }
-    val ldapUser: String = ldapUser.trim { it <= ' ' }
+    val firstName: String = mergeFirstAndSecondName(secondFirstName, firstName)
+    val lastName: String = lastName.normalizeName()
+    val ldapUser: String = ldapUser.normalizeName()
 
     // TODO verify on init block required fields are not empty
 
@@ -22,4 +22,7 @@ class Person(firstName: String,
     }
 
     private fun String.removeDuplicatedWhiteSpaces() = this.replace("\\s+".toRegex(), " ")
+    private fun String.normalizeName() = trim { it <= ' ' }
+    private fun mergeFirstAndSecondName(secondFirstName: String?, firstName: String) =
+            if (secondFirstName.isNullOrBlank()) firstName.normalizeName() else "${firstName.normalizeName()} ${secondFirstName.normalizeName()}"
 }
