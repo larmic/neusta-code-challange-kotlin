@@ -3,7 +3,8 @@ package de.neusta.ncc.application.validator
 import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class RoomNumberValidatorTest {
 
@@ -32,23 +33,18 @@ class RoomNumberValidatorTest {
         assertException("ÄÜÖ?ZZZZ")
     }
 
-    @Test(expected = RoomNumberNotValidException::class)
+    @Test
     fun validateWithEmptyValue() {
-        validator.validate("")
+        assertThrows<RoomNumberNotValidException> { validator.validate("") }
     }
 
-    @Test(expected = RoomNumberNotValidException::class)
+    @Test
     fun validateWithNullValue() {
-        validator.validate(null)
+        assertThrows<RoomNumberNotValidException> { validator.validate(null) }
     }
 
     private fun assertException(room: String) {
-        try {
-            validator.validate(room)
-            fail("Should throw exception")
-        } catch (e: RoomNumberNotValidException) {
-            assertThat(e.message).isEqualTo("Room with number $room must have 4 arbitrary characters.")
-        }
-
+        val exception = assertThrows<RoomNumberNotValidException> { validator.validate(room) }
+        assertThat(exception.message).isEqualTo("Room with number $room must have 4 arbitrary characters.")
     }
 }

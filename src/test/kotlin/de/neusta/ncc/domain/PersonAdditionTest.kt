@@ -1,7 +1,8 @@
 package de.neusta.ncc.domain
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class PersonAdditionTest {
 
@@ -21,9 +22,9 @@ class PersonAdditionTest {
         assertThat(PersonAddition.valueOfByLabel(" ")).isNull()
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `get value by label when label is unknown`() {
-        PersonAddition.valueOfByLabel("not-known")
+        assertThrows<IllegalArgumentException> { PersonAddition.valueOfByLabel("not-known") }
     }
 
 }

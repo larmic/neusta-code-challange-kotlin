@@ -1,7 +1,8 @@
 package de.neusta.ncc.domain
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class PersonTitleTest {
 
@@ -22,9 +23,8 @@ class PersonTitleTest {
         assertThat(PersonTitle.valueOfByLabel(null)).isNull()
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `get value by label when label is unknown`() {
-        PersonTitle.valueOfByLabel("not-known")
+        assertThrows<IllegalArgumentException> { PersonTitle.valueOfByLabel("not-known") }
     }
-
 }

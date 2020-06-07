@@ -12,10 +12,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @SpringBootApplication
 @EnableSwagger2
-class NccApplication {
+open class NccApplication {
 
     @Bean
-    fun api(): Docket {
+    open fun api(): Docket {
         return Docket(DocumentationType.SWAGGER_2)
                 .groupName("api")
                 .useDefaultResponseMessages(false)

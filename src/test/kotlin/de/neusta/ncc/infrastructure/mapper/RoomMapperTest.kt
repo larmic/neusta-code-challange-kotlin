@@ -6,18 +6,12 @@ import de.neusta.ncc.domain.PersonTitle
 import de.neusta.ncc.domain.Room
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.*
 
 class RoomMapperTest {
 
-    private lateinit var roomMapper: RoomMapper
-
-    @Before
-    fun setUp() {
-        roomMapper = RoomMapper()
-    }
+    private var roomMapper = RoomMapper()
 
     @Test
     fun mapToDto() {

@@ -3,7 +3,8 @@ package de.neusta.ncc.application.validator
 import de.neusta.ncc.application.validator.exception.LdapUserIsNotUniqueException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class LdapUserUniqueValidatorTest {
@@ -27,13 +28,8 @@ class LdapUserUniqueValidatorTest {
     }
 
     private fun assertException(rooms: List<String>) {
-        try {
-            validator.validate(rooms)
-            fail("Should throw exception")
-        } catch (e: LdapUserIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("LDAP users should only appear once.")
-        }
-
+        val exception = assertThrows<LdapUserIsNotUniqueException> { validator.validate(rooms) }
+        assertThat(exception.message).isEqualTo("LDAP users should only appear once.")
     }
 
 }

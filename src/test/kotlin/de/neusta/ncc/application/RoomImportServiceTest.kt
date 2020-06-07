@@ -11,40 +11,31 @@ import de.neusta.ncc.domain.PersonTitle
 import de.neusta.ncc.domain.Room
 import de.neusta.ncc.infrastructure.CacheRoomRepository
 import org.assertj.core.api.Assertions.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class RoomImportServiceTest {
 
     private val roomRepository = CacheRoomRepository()
-    private var roomImportService: RoomImportService? = null
+    private var roomImportService = RoomImportService(
+            RoomNumberValidator(),
+            RoomUniqueValidator(),
+            LdapUserUniqueValidator(),
+            roomRepository)
 
-    private var susanne: Person? = null
-    private var uwe: Person? = null
-    private var alex: Person? = null
-    private var samin: Person? = null
-
-    @Before
-    fun setUp() {
-        roomImportService = RoomImportService(
-                RoomNumberValidator(),
-                RoomUniqueValidator(),
-                LdapUserUniqueValidator(),
-                roomRepository)
-
-        susanne = Person.PersonBuilder("Susanne", "Moog", "smoog").build()
-        uwe = Person.PersonBuilder("Uwe", "Svensson", "usvens").title(PersonTitle.DR).build()
-        alex = Person.PersonBuilder("Alexander", "Cole", "acole").secondFirstName("James").build()
-        samin = Person.PersonBuilder("Samin", "Ölker", "soelker").build()
-    }
+    private var susanne = Person.PersonBuilder("Susanne", "Moog", "smoog").build()
+    private var uwe = Person.PersonBuilder("Uwe", "Svensson", "usvens").title(PersonTitle.DR).build()
+    private var alex = Person.PersonBuilder("Alexander", "Cole", "acole").secondFirstName("James").build()
+    private var samin = Person.PersonBuilder("Samin", "Ölker", "soelker").build()
 
     @Test
     fun testImport() {
-        val room1 = Room.RoomBuilder("1000").persons(Arrays.asList<Person>(susanne, uwe)).build()
-        val room2 = Room.RoomBuilder("1001").persons(Arrays.asList<Person>(alex, samin)).build()
+        val room1 = Room.RoomBuilder("1000").persons(Arrays.asList(susanne, uwe)).build()
+        val room2 = Room.RoomBuilder("1001").persons(Arrays.asList(alex, samin)).build()
 
-        roomImportService!!.importRooms(Arrays.asList(room1, room2))
+        roomImportService.importRooms(Arrays.asList(room1, room2))
 
         assertThat(roomRepository.getRooms()).hasSize(2)
         assertThat(roomRepository.findByRoomNumber("1000")!!.roomNumber).isEqualTo("1000")
@@ -54,7 +45,7 @@ class RoomImportServiceTest {
                         tuple("Uwe", "Svensson", "usvens")
                 )
         assertThat(roomRepository.findByRoomNumber("1001")!!.roomNumber).isEqualTo("1001")
-        assertThat<Person>(roomRepository.findByRoomNumber("1001")!!.persons).extracting("firstName", "lastName", "ldapUser")
+        assertThat(roomRepository.findByRoomNumber("1001")!!.persons).extracting("firstName", "lastName", "ldapUser")
                 .containsExactlyInAnyOrder(
                         tuple("Alexander James", "Cole", "acole"),
                         tuple("Samin", "Ölker", "soelker")
@@ -65,14 +56,10 @@ class RoomImportServiceTest {
     fun testImportWithWrongRoomNumberLength() {
         val room = Room.RoomBuilder("100").persons(Arrays.asList<Person>(susanne, uwe)).build()
 
-        try {
-            roomImportService!!.importRooms(listOf(room))
-            fail("Should throw exception")
-        } catch (e: RoomNumberNotValidException) {
-            assertThat(e.message).isEqualTo("Room with number 100 must have 4 arbitrary characters.")
-        }
+        val exception = assertThrows<RoomNumberNotValidException> { roomImportService!!.importRooms(listOf(room)) }
 
-        assertThat<Room>(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
+        assertThat(exception.message).isEqualTo("Room with number 100 must have 4 arbitrary characters.")
+        assertThat(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
     }
 
     @Test
@@ -80,14 +67,9 @@ class RoomImportServiceTest {
         val room1 = Room.RoomBuilder("1001").persons(Arrays.asList<Person>(susanne, uwe)).build()
         val room2 = Room.RoomBuilder("1001").persons(Arrays.asList<Person>(alex, samin)).build()
 
-        try {
-            roomImportService!!.importRooms(Arrays.asList(room1, room2))
-            fail("Should throw exception")
-        } catch (e: RoomIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("Room numbers should only appear once.")
-        }
-
-        assertThat<Room>(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
+        val exception = assertThrows<RoomIsNotUniqueException> { roomImportService!!.importRooms(Arrays.asList(room1, room2)) }
+        assertThat(exception.message).isEqualTo("Room numbers should only appear once.")
+        assertThat(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
     }
 
     @Test
@@ -95,14 +77,9 @@ class RoomImportServiceTest {
         val room1 = Room.RoomBuilder("1001").build()
         val room2 = Room.RoomBuilder("1001").build()
 
-        try {
-            roomImportService!!.importRooms(Arrays.asList(room1, room2))
-            fail("Should throw exception")
-        } catch (e: RoomIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("Room numbers should only appear once.")
-        }
-
-        assertThat<Room>(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
+        val exception = assertThrows<RoomIsNotUniqueException> { roomImportService!!.importRooms(Arrays.asList(room1, room2)) }
+        assertThat(exception.message).isEqualTo("Room numbers should only appear once.")
+        assertThat(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
     }
 
     @Test
@@ -112,13 +89,8 @@ class RoomImportServiceTest {
         val room1 = Room.RoomBuilder("1000").persons(Arrays.asList<Person>(susanne, uwe)).build()
         val room2 = Room.RoomBuilder("1001").persons(Arrays.asList<Person>(alex, saminWithSusannesLdap)).build()
 
-        try {
-            roomImportService!!.importRooms(Arrays.asList(room1, room2))
-            fail("Should throw exception")
-        } catch (e: LdapUserIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("LDAP users should only appear once.")
-        }
-
-        assertThat<Room>(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
+        val exception = assertThrows<LdapUserIsNotUniqueException> { roomImportService!!.importRooms(Arrays.asList(room1, room2)) }
+        assertThat(exception.message).isEqualTo("LDAP users should only appear once.")
+        assertThat(roomRepository.getRooms()).hasSize(0) // assert that nothing has been imported
     }
 }

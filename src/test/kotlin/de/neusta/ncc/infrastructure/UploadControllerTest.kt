@@ -7,31 +7,24 @@ import de.neusta.ncc.application.validator.exception.RoomNumberNotValidException
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.mapper.CsvImportMapper
 import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
-import de.neusta.ncc.infrastructure.mapper.exception.EmptyFileImportException
-import de.neusta.ncc.infrastructure.mapper.exception.FileImportException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyList
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.web.multipart.MultipartFile
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
 /**
  * Mapping and validation tests of {@link UploadController}.
  * <p>
  * Mocks inner mapper and services to be loosely coupled from core logic.
  */
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UploadControllerTest {
 
@@ -53,33 +46,11 @@ class UploadControllerTest {
     }
 
     @Test
-    @Ignore
-    fun testUploadWithFileIsEmpty() {
-        `when`(csvImportMapperMock.map(ArgumentMatchers.any(MultipartFile::class.java))).thenThrow(EmptyFileImportException())
-
-        val exchange = uploadRequestSender.sendUploadRequest("empty.csv", String::class.java)
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":0,\"message\":\"Required request part 'file' is empty\"}")
-    }
-
-    @Test
     fun testUploadWithFileIsNull() {
         val exchange = uploadRequestSender.sendUploadRequest(null, String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(exchange.body).contains("\"message\":\"Required request part 'file' is not present\"")
-    }
-
-    @Test
-    @Ignore
-    fun testUploadWithCsvImportMapperThrowsGeneralImportException() {
-        `when`(csvImportMapperMock.map(any(MultipartFile::class.java))).thenThrow(FileImportException())
-
-        val exchange = uploadRequestSender.sendUploadRequest("simple.csv", String::class.java)
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).isEqualTo("{\"code\":0,\"message\":\"Access error when get bytes of file.\"}")
     }
 
     @Test

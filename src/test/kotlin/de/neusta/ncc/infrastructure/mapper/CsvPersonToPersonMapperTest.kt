@@ -4,7 +4,8 @@ import de.neusta.ncc.domain.PersonAddition
 import de.neusta.ncc.domain.PersonTitle
 import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CsvPersonToPersonMapperTest {
 
@@ -119,34 +120,29 @@ class CsvPersonToPersonMapperTest {
         assertThat(ldapUser).isEqualTo("acole")
     }
 
-    @Test(expected = CsvPersonNotValidException::class)
+    @Test
     fun `map person with three names`() {
-        val (firstName, lastName, title, addition, ldapUser) = mapper.map("Alexander James Cole Pinnhammer (acole)")
-        assertThat(title).isNull()
-        assertThat(firstName).isEqualTo("Alexander")
-        assertThat(addition).isEqualTo(PersonAddition.VON)
-        assertThat(lastName).isEqualTo("Van")
-        assertThat(ldapUser).isEqualTo("acole")
+        assertThrows<CsvPersonNotValidException> { mapper.map("Alexander James Cole Pinnhammer (acole)") }
     }
 
-    @Test(expected = CsvPersonNotValidException::class)
+    @Test
     fun `map person without firstname`() {
-        mapper.map("Pinnhammer (jpinnhammer)")
+        assertThrows<CsvPersonNotValidException> { mapper.map("Pinnhammer (jpinnhammer)") }
     }
 
-    @Test(expected = CsvPersonNotValidException::class)
+    @Test
     fun `map person without lastname`() {
-        mapper.map("Janina (jpinnhammer)")
+        assertThrows<CsvPersonNotValidException> { mapper.map("Janina (jpinnhammer)") }
     }
 
-    @Test(expected = CsvPersonNotValidException::class)
+    @Test
     fun `map person without ldap`() {
-        mapper.map("Janina von Pinnhammer")
+        assertThrows<CsvPersonNotValidException> { mapper.map("Janina von Pinnhammer") }
     }
 
-    @Test(expected = CsvPersonNotValidException::class)
+    @Test
     fun `map empty person`() {
-        mapper.map("")
+        assertThrows<CsvPersonNotValidException> { mapper.map("") }
     }
-    
+
 }

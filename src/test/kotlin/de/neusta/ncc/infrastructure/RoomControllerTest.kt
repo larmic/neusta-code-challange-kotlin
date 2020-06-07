@@ -7,9 +7,9 @@ import de.neusta.ncc.infrastructure.dto.RoomDto
 import de.neusta.ncc.infrastructure.mapper.CsvPersonToPersonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.reset
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,9 +20,9 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomControllerTest {
 
@@ -35,7 +35,7 @@ class RoomControllerTest {
     @MockBean
     private lateinit var roomRepositoryMock: RoomRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
         `when`(roomRepositoryMock.getRooms()).thenReturn(listOf(
                 createRoom("1000", "Susanne Moog (smoog)"),

@@ -4,20 +4,18 @@ import de.neusta.ncc.domain.Person
 import de.neusta.ncc.domain.Room
 import de.neusta.ncc.infrastructure.CacheRoomRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class CacheRoomRepositoryTest {
 
-    private lateinit var roomRepository: CacheRoomRepository
+    private var roomRepository = CacheRoomRepository()
 
     private lateinit var room1: Room
     private lateinit var room2: Room
 
-    @Before
+    @BeforeEach
     fun setUp() {
-        roomRepository = CacheRoomRepository()
-
         val alexander = Person.PersonBuilder("Alexander", "Cole", "acole")
                 .secondFirstName("James")
                 .build()

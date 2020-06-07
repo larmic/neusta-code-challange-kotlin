@@ -3,7 +3,8 @@ package de.neusta.ncc.application.validator
 import de.neusta.ncc.application.validator.exception.RoomIsNotUniqueException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class RoomUniqueValidatorTest {
 
@@ -26,12 +27,7 @@ class RoomUniqueValidatorTest {
     }
 
     private fun assertException(rooms: List<String>) {
-        try {
-            validator.validate(rooms)
-            fail("Should throw exception")
-        } catch (e: RoomIsNotUniqueException) {
-            assertThat(e.message).isEqualTo("Room numbers should only appear once.")
-        }
-
+        val exception = assertThrows<RoomIsNotUniqueException> { validator.validate(rooms) }
+        assertThat(exception.message).isEqualTo("Room numbers should only appear once.")
     }
 }

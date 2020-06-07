@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a submission to the neusta code challenge 2017. 
+This is a submission to the neusta code challenge 2017 [Git Tag v2017-MARCH](https://github.com/larmic/neusta-code-challange-kotlin/releases/tag/v2017-MARCH). 
 The following technologies have been used for the implementation: maven, java, spring boot, swagger and optional docker.
 
 Three endpoints are available after starting the application:
@@ -39,8 +39,8 @@ Due to time constrains no ARC42 documentation is created.
 
 ## Requirements
 
-* Java 1.8
-* Maven >= 3.2.1
+* Java 11
+* Maven >= 3.6.x
 * Docker optional
 
 ## Build and run
