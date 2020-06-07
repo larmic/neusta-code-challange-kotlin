@@ -16,11 +16,10 @@ import org.springframework.stereotype.Service
  * If importing rooms are not valid (i.e. uniqueness of rooms or person) nothing will be imported.
  */
 @Service
-class RoomImportService @Autowired constructor(
-        private var roomNumberValidator: RoomNumberValidator,
-        private var roomUniqueValidator: RoomUniqueValidator,
-        private var ldapUserUniqueValidator: LdapUserUniqueValidator,
-        private var roomRepository: RoomRepository) {
+class RoomImportService(private var roomNumberValidator: RoomNumberValidator,
+                        private var roomUniqueValidator: RoomUniqueValidator,
+                        private var ldapUserUniqueValidator: LdapUserUniqueValidator,
+                        private var roomRepository: RoomRepository) {
 
     @Throws(RoomNumberNotValidException::class, RoomIsNotUniqueException::class, LdapUserIsNotUniqueException::class)
     fun importRooms(rooms: List<Room>) {

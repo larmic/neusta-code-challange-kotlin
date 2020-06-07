@@ -17,13 +17,13 @@ class RoomBuilderTest {
 
     @Test
     fun testPersons() {
-        val susanne = Person.PersonBuilder("Susanne", "Moog", "smoog").build()
-        val uwe = Person.PersonBuilder("Uwe", "Svensson", "usvens").title(PersonTitle.DR).build()
-        val alex = Person.PersonBuilder("Alexander", "Cole", "acole").secondFirstName("James").build()
-        val florenz = Person.PersonBuilder("Florenz", "Buhrke", "fbuhrke").addition(PersonAddition.VON).build()
+        val susanne = Person(firstName = "Susanne", lastName = "Moog", ldapUser = "smoog")
+        val uwe = Person(firstName = "Uwe", lastName = "Svensson", ldapUser = "usvens", title = PersonTitle.DR)
+        val alex = Person(firstName = "Alexander", secondFirstName = "James", lastName = "Cole", ldapUser = "acole")
+        val florenz = Person(firstName = "Florenz", lastName = "Buhrke", ldapUser = "fbuhrke", addition = PersonAddition.VON)
 
         val room = Room.RoomBuilder("4444")
-                .persons(Arrays.asList(susanne, uwe, alex, florenz))
+                .persons(listOf(susanne, uwe, alex, florenz))
                 .build()
 
         assertThat(room.roomNumber).isEqualTo("4444")
