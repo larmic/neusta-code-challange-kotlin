@@ -19,12 +19,8 @@ class CacheRoomRepositoryTest {
         val alexander = Person(firstName = "Alexander", secondFirstName = "James", lastName = "Cole", ldapUser = "acole")
         val alexandersBrother = Person(firstName = "Alexander", secondFirstName = "Brother", lastName = "Cole", ldapUser = "abcole")
 
-        room1 = Room.RoomBuilder("1110")
-                .persons(listOf(alexander))
-                .build()
-        room2 = Room.RoomBuilder("1111")
-                .persons(listOf(alexandersBrother))
-                .build()
+        room1 = Room(roomNumber = "1110", persons = listOf(alexander))
+        room2 = Room(roomNumber = "1111", persons = listOf(alexandersBrother))
     }
 
     @Test

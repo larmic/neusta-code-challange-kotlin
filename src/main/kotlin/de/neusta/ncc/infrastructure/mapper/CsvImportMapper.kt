@@ -8,7 +8,6 @@ import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
 import de.neusta.ncc.infrastructure.mapper.exception.EmptyFileImportException
 import de.neusta.ncc.infrastructure.mapper.exception.FileImportException
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
@@ -18,7 +17,7 @@ import java.util.*
  * Maps a given {@link MultipartFile} to list of {@link Room}. Does not validate any content of given file.
  */
 @Component
-class CsvImportMapper @Autowired constructor(private val csvPersonToPersonMapper: CsvPersonToPersonMapper) {
+class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapper) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -54,7 +53,7 @@ class CsvImportMapper @Autowired constructor(private val csvPersonToPersonMapper
         while (it.hasNext()) {
             val csvRow = it.next()
             val roomNumber = csvRow[0]
-            val persons = Arrays.asList<String>(*csvRow).subList(1, csvRow.size)
+            val persons = listOf(*csvRow).subList(1, csvRow.size)
 
             dataModel.add(SimpleImportRoom(roomNumber, persons
                     .filter { v -> v.isNotEmpty() }))
@@ -81,11 +80,7 @@ class CsvImportMapper @Autowired constructor(private val csvPersonToPersonMapper
         internal fun convertToRoom(): Room {
             val people = persons
                     .map { p -> csvPersonToPersonMapper.map(p) }
-            return Room.RoomBuilder(room)
-                    .persons(people)
-                    .build()
+            return Room(roomNumber = room, persons = people)
         }
-
     }
-
 }

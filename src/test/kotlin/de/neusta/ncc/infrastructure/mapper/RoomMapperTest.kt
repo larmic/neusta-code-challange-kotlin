@@ -17,9 +17,7 @@ class RoomMapperTest {
         val person1 = Person(firstName = "Leif", secondFirstName = "Arne", lastName = "Genzmer", ldapUser = "lgenzmer", title = PersonTitle.DR)
         val person2 = Person(firstName = "Samin", lastName = "Ölker", ldapUser = "soelker", addition = PersonAddition.DE)
 
-        val room = Room.RoomBuilder("1103")
-                .persons(listOf(person1, person2))
-                .build()
+        val room = Room(roomNumber = "1103", persons = listOf(person1, person2))
 
         val (people, room1) = roomMapper.mapToDto(room)
 
@@ -34,7 +32,7 @@ class RoomMapperTest {
 
     @Test
     fun mapToDtoWithRoomIsEmpty() {
-        val room = Room.RoomBuilder("1104").build()
+        val room = Room(roomNumber = "1104")
 
         val (people, room1) = roomMapper.mapToDto(room)
 

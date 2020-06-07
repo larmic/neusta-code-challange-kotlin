@@ -185,8 +185,8 @@ class RoomControllerTest {
     }
 
     private fun createRoom(roomNumber: String, vararg persons: String): Room {
-        val per = persons.map { p -> csvPersonToPersonMapper.map(p) }
-        return Room.RoomBuilder(roomNumber).persons(per).build()
+        val per = persons.map { csvPersonToPersonMapper.map(it) }
+        return Room(roomNumber = roomNumber, persons = per)
     }
 
     private fun getRoomFrom(rooms: List<RoomDto>, roomNumber: String): RoomDto? {

@@ -31,8 +31,8 @@ class RoomImportServiceTest {
 
     @Test
     fun testImport() {
-        val room1 = Room.RoomBuilder("1000").persons(listOf(susanne, uwe)).build()
-        val room2 = Room.RoomBuilder("1001").persons(listOf(alex, samin)).build()
+        val room1 = Room(roomNumber = "1000", persons = listOf(susanne, uwe))
+        val room2 = Room(roomNumber = "1001", persons = listOf(alex, samin))
 
         roomImportService.importRooms(listOf(room1, room2))
 
@@ -53,7 +53,7 @@ class RoomImportServiceTest {
 
     @Test
     fun testImportWithWrongRoomNumberLength() {
-        val room = Room.RoomBuilder("100").persons(listOf(susanne, uwe)).build()
+        val room = Room(roomNumber = "100", persons = listOf(susanne, uwe))
 
         val exception = assertThrows<RoomNumberNotValidException> { roomImportService.importRooms(listOf(room)) }
 
@@ -63,8 +63,8 @@ class RoomImportServiceTest {
 
     @Test
     fun testImportWithRoomNumberIsNotUnique() {
-        val room1 = Room.RoomBuilder("1001").persons(listOf(susanne, uwe)).build()
-        val room2 = Room.RoomBuilder("1001").persons(listOf(alex, samin)).build()
+        val room1 = Room(roomNumber = "1001", persons = listOf(susanne, uwe))
+        val room2 = Room(roomNumber = "1001", persons = listOf(alex, samin))
 
         val exception = assertThrows<RoomIsNotUniqueException> { roomImportService.importRooms(listOf(room1, room2)) }
         assertThat(exception.message).isEqualTo("Room numbers should only appear once.")
@@ -73,8 +73,8 @@ class RoomImportServiceTest {
 
     @Test
     fun testImportWithRoomNumberIsNotUniqueAndRoomsAreEmpty() {
-        val room1 = Room.RoomBuilder("1001").build()
-        val room2 = Room.RoomBuilder("1001").build()
+        val room1 = Room(roomNumber = "1001")
+        val room2 = Room(roomNumber = "1001")
 
         val exception = assertThrows<RoomIsNotUniqueException> { roomImportService.importRooms(listOf(room1, room2)) }
         assertThat(exception.message).isEqualTo("Room numbers should only appear once.")
@@ -85,8 +85,8 @@ class RoomImportServiceTest {
     fun testImportWithPersonIsNotUnique() {
         val saminWithSusannesLdap = Person(firstName = "Samin", lastName = "Ölker", ldapUser = "smoog")
 
-        val room1 = Room.RoomBuilder("1000").persons(listOf(susanne, uwe)).build()
-        val room2 = Room.RoomBuilder("1001").persons(listOf(alex, saminWithSusannesLdap)).build()
+        val room1 = Room(roomNumber = "1000", persons = listOf(susanne, uwe))
+        val room2 = Room(roomNumber = "1001", persons = listOf(alex, saminWithSusannesLdap))
 
         val exception = assertThrows<LdapUserIsNotUniqueException> { roomImportService.importRooms(listOf(room1, room2)) }
         assertThat(exception.message).isEqualTo("LDAP users should only appear once.")

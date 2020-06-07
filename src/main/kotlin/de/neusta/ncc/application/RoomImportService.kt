@@ -31,20 +31,19 @@ class RoomImportService(private var roomNumberValidator: RoomNumberValidator,
     }
 
     private fun validateRoomNumber(rooms: List<Room>) {
-        rooms.forEach { (roomNumber) -> roomNumberValidator.validate(roomNumber) }
+        rooms.forEach { roomNumberValidator.validate(it.roomNumber) }
     }
 
     private fun validateRoomNumbersAreUnique(rooms: List<Room>) {
-        val roomNumbers = rooms
-                .map { r -> r.roomNumber }
+        val roomNumbers = rooms.map { it.roomNumber }
 
         roomUniqueValidator.validate(roomNumbers)
     }
 
     private fun validateLdapUsersAreUnique(rooms: List<Room>) {
         val ldapUsers = rooms
-                .flatMap { r -> r.persons }
-                .map { p -> p.ldapUser }
+                .flatMap { it.persons }
+                .map { it.ldapUser }
 
         ldapUserUniqueValidator.validate(ldapUsers)
     }
