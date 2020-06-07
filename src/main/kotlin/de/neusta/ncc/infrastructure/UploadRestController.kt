@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-class UploadController @Autowired constructor(
+class UploadRestController @Autowired constructor(
         private var csvImportMapper: CsvImportMapper,
         private var roomImportService: RoomImportService) {
 

@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class RoomController(private var roomRepository: RoomRepository,
-                     private var roomMapper: RoomMapper) {
+class RoomRestController(private var roomRepository: RoomRepository,
+                         private var roomMapper: RoomMapper) {
 
     @ApiOperation(value = "Loads all existing rooms.", notes = "If a ldap user name query parameter is used all rooms with persons contains parts of this name will be returned.")
     @ApiResponses(value = [

@@ -25,7 +25,7 @@ import java.lang.AssertionError
  */
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UploadControllerTest {
+class UploadRestControllerTest {
 
     @Autowired
     private lateinit var uploadRequestSender: UploadRequestSender
