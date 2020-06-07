@@ -12,11 +12,6 @@ interface RoomRepository {
      */
     fun findByRoomNumber(roomNumber: String): Room?
 
-    /**
-     * @return a [List] of [Room]s that contains persons with given is like ldap user names.
-     */
-    fun findByLikeLdapUser(ldapUser: String): List<Room>
-
     fun getRooms(): List<Room>
 
 }

@@ -17,8 +17,5 @@ class CacheRoomRepository : RoomRepository {
     }
 
     override fun findByRoomNumber(roomNumber: String) = rooms.firstOrNull { r -> r.roomNumber == roomNumber }
-    override fun findByLikeLdapUser(ldapUser: String) = rooms.filter { it.containsLikeLdapUserIgnoreCase(ldapUser) }
     override fun getRooms() = rooms
-
-    private fun Room.containsLikeLdapUserIgnoreCase(ldapUser: String) = this.persons.any { it.ldapUser.toLowerCase().contains(ldapUser.toLowerCase()) }
 }

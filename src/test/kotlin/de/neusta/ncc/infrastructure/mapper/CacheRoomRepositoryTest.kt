@@ -47,23 +47,4 @@ class CacheRoomRepositoryTest {
     fun `find room by number but room does not exists`() {
         assertThat(roomRepository.findByRoomNumber("0000")).isNull()
     }
-
-    @Test
-    fun `find room by ldap user name`() {
-        roomRepository.replaceRooms(listOf(room1, room2))
-
-        assertThat(roomRepository.findByLikeLdapUser("acole")).containsExactly(room1)
-        assertThat(roomRepository.findByLikeLdapUser("aCole")).containsExactly(room1)
-        assertThat(roomRepository.findByLikeLdapUser("abcole")).containsExactly(room2)
-        assertThat(roomRepository.findByLikeLdapUser("cole")).containsExactlyInAnyOrder(room1, room2)
-        assertThat(roomRepository.findByLikeLdapUser("unkown")).isEmpty()
-    }
-
-    @Test
-    fun `find rooms by empty ldap user name`() {
-        roomRepository.replaceRooms(listOf(room1, room2))
-
-        assertThat(roomRepository.findByLikeLdapUser("")).containsExactlyInAnyOrder(room1, room2)
-    }
-
 }

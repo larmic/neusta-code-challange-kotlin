@@ -42,7 +42,6 @@ class RoomControllerTest {
         )
         every { roomRepositoryMock.findByRoomNumber("1000") } returns createRoom("1000", "Susanne Moog (smoog)")
         every { roomRepositoryMock.findByRoomNumber("1001") } returns createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
-        every { roomRepositoryMock.findByLikeLdapUser("smoog") } returns listOf(createRoom("1000", "Susanne Moog (smoog)"))
     }
 
     @Test
@@ -63,21 +62,6 @@ class RoomControllerTest {
                 .containsExactlyInAnyOrder(
                         Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
                         Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
-                )
-    }
-
-    @Test
-    fun `find all rooms and filter by ldap user`() {
-        val exchange = testRestTemplate.exchange("/api/room?ldapUser=smoog", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
-
-        })
-
-        assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(exchange.body).extracting("room").containsExactly("1000")
-        assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
                 )
     }
 
