@@ -21,9 +21,7 @@ class RoomRestController(private var roomRepository: RoomRepository,
         (ApiResponse(code = 405, message = "Wrong method type", response = DefaultSpringErrorDto::class)),
         (ApiResponse(code = 500, message = "Internal server error", response = DefaultSpringErrorDto::class))])
     @RequestMapping(value = ["/api/room"], method = [(RequestMethod.GET)], produces = ["application/json"])
-    fun getAllRooms(): ResponseEntity<List<RoomDto>> {
-        return ResponseEntity.ok(roomRepository.getRooms().map { roomMapper.mapToDto(it) })
-    }
+    fun getAllRooms(): ResponseEntity<List<RoomDto>> = ResponseEntity.ok(roomRepository.getRooms().map { roomMapper.mapToDto(it) })
 
     @ApiOperation(value = "Loads a specific room for a given number.")
     @ApiResponses(value = [
@@ -33,7 +31,7 @@ class RoomRestController(private var roomRepository: RoomRepository,
         (ApiResponse(code = 500, message = "Internal server error", response = DefaultSpringErrorDto::class))])
     @RequestMapping(value = ["/api/room/{number}"], method = [(RequestMethod.GET)], produces = ["application/json"])
     fun getRoom(@PathVariable number: String): ResponseEntity<*> {
-        if (!isRoomNumberValid(number)) {
+        if (isRoomNumberInvalid(number)) {
             return ResponseEntity(ErrorMessageDto(6, "Room with number $number must have 4 arbitrary characters."), HttpStatus.BAD_REQUEST)
         }
 
@@ -43,5 +41,5 @@ class RoomRestController(private var roomRepository: RoomRepository,
         return ResponseEntity.ok(roomMapper.mapToDto(room))
     }
 
-    private fun isRoomNumberValid(number: String) = number.length == 4
+    private fun isRoomNumberInvalid(number: String) = number.length != 4
 }
