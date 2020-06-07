@@ -1,11 +1,10 @@
 package de.neusta.ncc.domain
 
-data class Person constructor(
-        val firstName: String,
-        val lastName: String,
-        val title: PersonTitle?,
-        val addition: PersonAddition?,
-        val ldapUser: String) {
+data class Person(val firstName: String,
+                  val lastName: String,
+                  val title: PersonTitle?,
+                  val addition: PersonAddition?,
+                  val ldapUser: String) {
 
     override fun toString(): String {
         val titleAsString = title?.label ?: ""
