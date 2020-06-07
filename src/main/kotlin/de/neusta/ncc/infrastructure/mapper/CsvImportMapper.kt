@@ -25,10 +25,10 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
     @Throws(FileImportException::class, EmptyFileImportException::class, AssertionError::class)
     fun map(file: MultipartFile): List<Room> {
         try {
-            val csvData = loadDate(file)
-            val importRooms = mapToSimpleImportModel(csvData)
-
-            return convertCsvImportRooms(importRooms)
+            return file
+                    .loadBytes()
+                    .mapToSimpleImportModel()
+                    .convertCsvImportRooms()
         } catch (e: IOException) {
             log.error("Could not import {}", file.originalFilename, e)
             throw FileImportException(e)
@@ -37,27 +37,26 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
     }
 
     @Throws(IOException::class)
-    private fun loadDate(file: MultipartFile): ByteArray {
-        if (file.isEmpty) {
-            log.error("File %s is empty", file.originalFilename)
+    private fun MultipartFile.loadBytes(): ByteArray {
+        if (this.isEmpty) {
+            log.error("File %s is empty", this.originalFilename)
             throw EmptyFileImportException()
         }
 
-        return file.bytes
+        return this.bytes
     }
 
     @Throws(IOException::class)
-    private fun mapToSimpleImportModel(csvData: ByteArray): List<SimpleImportRoom> {
+    private fun ByteArray.mapToSimpleImportModel(): List<SimpleImportRoom> {
         val dataModel = ArrayList<SimpleImportRoom>()
 
-        val it = readCsvValues(csvData)
+        val it = readCsvValues(this)
         while (it.hasNext()) {
             val csvRow = it.next()
             val roomNumber = csvRow[0]
             val persons = listOf(*csvRow).subList(1, csvRow.size)
 
-            dataModel.add(SimpleImportRoom(roomNumber, persons
-                    .filter { v -> v.isNotEmpty() }))
+            dataModel.add(SimpleImportRoom(roomNumber, persons.filter { it.isNotEmpty() }))
         }
 
         return dataModel
@@ -71,8 +70,8 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
     }
 
     @Throws(CsvPersonNotValidException::class, AssertionError::class)
-    private fun convertCsvImportRooms(simpleImportRooms: List<SimpleImportRoom>): List<Room> {
-        return simpleImportRooms.map { it.convertToRoom() }
+    private fun List<SimpleImportRoom>.convertCsvImportRooms(): List<Room> {
+        return this.map { it.convertToRoom() }
     }
 
     private inner class SimpleImportRoom internal constructor(private val room: String, private val persons: List<String>) {
