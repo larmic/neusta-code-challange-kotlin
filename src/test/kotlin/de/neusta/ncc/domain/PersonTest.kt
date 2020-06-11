@@ -22,6 +22,14 @@ class PersonTest {
             assertThat(person.ldapUser).isEqualTo("usvens")
         }
 
+        @Test
+        fun `has minimal not trimmed attributes`() {
+            val person = Person(firstName = " Uwe ", lastName = " Svensson ", ldapUser = " usvens ")
+            assertThat(person.firstName).isEqualTo("Uwe")
+            assertThat(person.lastName).isEqualTo("Svensson")
+            assertThat(person.ldapUser).isEqualTo("usvens")
+        }
+
         @ParameterizedTest
         @EnumSource(PersonAddition::class)
         fun `has addition`(addition: PersonAddition) {
