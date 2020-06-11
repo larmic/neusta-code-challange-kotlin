@@ -1,6 +1,5 @@
 package de.neusta.ncc.infrastructure
 
-import de.neusta.ncc.domain.Room
 import de.neusta.ncc.domain.RoomRepository
 import de.neusta.ncc.infrastructure.dto.DefaultSpringErrorDto
 import de.neusta.ncc.infrastructure.dto.ErrorMessageDto
