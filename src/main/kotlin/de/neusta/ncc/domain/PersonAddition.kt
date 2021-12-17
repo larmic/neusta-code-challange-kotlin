@@ -1,5 +1,7 @@
 package de.neusta.ncc.domain
 
+import java.util.*
+
 enum class PersonAddition(val label: String) {
 
     VON("von"),
@@ -16,6 +18,6 @@ enum class PersonAddition(val label: String) {
         }
 
         private fun String.mapToAddition() = values().firstOrNull { it.label == this.trimAndLowercase() }
-        private fun String.trimAndLowercase() = this.trim { it <= ' ' }.toLowerCase()
+        private fun String.trimAndLowercase() = this.trim { it <= ' ' }.lowercase()
     }
 }

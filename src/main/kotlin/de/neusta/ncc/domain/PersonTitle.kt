@@ -1,5 +1,7 @@
 package de.neusta.ncc.domain
 
+import java.util.*
+
 enum class PersonTitle(val label: String) {
 
     DR("Dr.");
@@ -13,7 +15,7 @@ enum class PersonTitle(val label: String) {
             }
         }
 
-        private fun String.mapToAddition() = values().firstOrNull { it.label.toLowerCase() == this.trimAndLowercase() }
-        private fun String.trimAndLowercase() = this.trim { it <= ' ' }.toLowerCase()
+        private fun String.mapToAddition() = values().firstOrNull { it.label.lowercase() == this.trimAndLowercase() }
+        private fun String.trimAndLowercase() = this.trim { it <= ' ' }.lowercase()
     }
 }

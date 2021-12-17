@@ -9,7 +9,7 @@ class StringListUniqueChecker {
 
     fun itemsUnique(values: List<String>): Boolean {
         val lowerCaseRooms = values
-                .map { s -> s.toLowerCase() }
+                .map { s -> s.lowercase() }
         val roomFilteredByDuplicates = HashSet(lowerCaseRooms)
 
         return roomFilteredByDuplicates.size == values.size

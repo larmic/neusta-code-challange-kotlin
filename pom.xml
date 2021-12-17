@@ -28,11 +28,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.6.10</kotlin.version>
+
+        <!-- libs -->
+        <jackson-dataformat-csv.version>2.11.0</jackson-dataformat-csv.version>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 
         <!-- testing -->
-        <junit-jupiter.version>5.7.0</junit-jupiter.version>
-        <mockk.version>1.10.0</mockk.version>
+        <junit-jupiter.version>5.8.2</junit-jupiter.version>
+        <mockk.version>1.12.1</mockk.version>
         <springmockk.version>2.0.3</springmockk.version>
     </properties>
 
@@ -44,7 +48,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.11.0</version>
+            <version>${jackson-dataformat-csv.version}</version>
         </dependency>
 
         <!-- kotlin support -->
@@ -61,12 +65,12 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <version>${springfox-swagger2.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <version>${springfox-swagger2.version}</version>
         </dependency>
 
         <!-- testing -->
