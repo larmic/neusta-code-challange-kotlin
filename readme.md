@@ -44,7 +44,7 @@ Due to time constrains no ARC42 documentation is created.
 
 ```ssh
 mvn clean package
-java -jar target/ncc.jar
+java -jar target/ncc-kotlin.jar
 ```
 
 ### Docker
