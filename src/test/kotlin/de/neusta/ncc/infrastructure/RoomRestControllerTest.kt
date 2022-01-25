@@ -200,7 +200,6 @@ class RoomRestControllerTest {
         assertThat(exchange.body!!.timestamp).isNotEmpty()
         assertThat(exchange.body!!.status).isEqualTo("405")
         assertThat(exchange.body!!.error).isEqualTo("Method Not Allowed")
-        assertThat(exchange.body!!.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
         assertThat(exchange.body!!.path).isEqualTo(url)
     }
 }

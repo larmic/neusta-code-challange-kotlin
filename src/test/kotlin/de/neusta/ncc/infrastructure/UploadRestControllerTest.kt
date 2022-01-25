@@ -45,7 +45,9 @@ class UploadRestControllerTest {
         val exchange = uploadRequestSender.sendUploadRequest(null, String::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(exchange.body).contains("\"message\":\"Required request part 'file' is not present\"")
+        assertThat(exchange.body).contains("\"status\":400")
+        assertThat(exchange.body).contains("\"error\":\"Bad Request\"")
+        assertThat(exchange.body).contains("\"path\":\"/api/import\"")
     }
 
     @Test
@@ -103,7 +105,6 @@ class UploadRestControllerTest {
         assertThat(exchange.body?.timestamp).isNotEmpty()
         assertThat(exchange.body?.status).isEqualTo("405")
         assertThat(exchange.body?.error).isEqualTo("Method Not Allowed")
-        assertThat(exchange.body?.message).isEqualTo("Request method '" + httpMethod.name + "' not supported")
         assertThat(exchange.body?.path).isEqualTo("/api/import")
     }
 

@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.7</version>
+        <version>2.6.3</version>
     </parent>
 
     <licenses>
@@ -31,8 +31,8 @@
         <kotlin.version>1.6.10</kotlin.version>
 
         <!-- libs -->
-        <jackson-dataformat-csv.version>2.12.6</jackson-dataformat-csv.version>
-        <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
+        <jackson-dataformat-csv.version>2.13.1</jackson-dataformat-csv.version>
+        <swagger.version>1.6.4</swagger.version>
 
         <!-- testing -->
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
@@ -61,16 +61,11 @@
             <artifactId>kotlin-reflect</artifactId>
         </dependency>
 
-        <!-- swagger rest documentation -->
+        <!-- swagger -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-swagger2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-swagger2.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
 
         <!-- testing -->
