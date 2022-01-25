@@ -74,10 +74,10 @@ class CsvImportMapper(private val csvPersonToPersonMapper: CsvPersonToPersonMapp
         return this.map { it.convertToRoom() }
     }
 
-    private inner class SimpleImportRoom internal constructor(private val room: String, private val persons: List<String>) {
+    private inner class SimpleImportRoom(private val room: String, private val persons: List<String>) {
 
         @Throws(CsvPersonNotValidException::class, AssertionError::class)
-        internal fun convertToRoom(): Room {
+        fun convertToRoom(): Room {
             val people = persons.map { csvPersonToPersonMapper.map(it) }
             return Room(roomNumber = room, persons = people)
         }

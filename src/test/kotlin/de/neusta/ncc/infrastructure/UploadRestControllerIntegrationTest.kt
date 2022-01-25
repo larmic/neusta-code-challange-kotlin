@@ -34,7 +34,7 @@ class UploadRestControllerIntegrationTest {
         assertThat(roomRepository.getRooms()).hasSize(2)
 
         val room1111 = roomRepository.findByRoomNumber("1111")
-        assertThat(room1111).isNotNull()
+        assertThat(room1111).isNotNull
         assertThat(room1111!!.roomNumber).isEqualTo("1111")
         assertThat(room1111.persons)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
@@ -45,7 +45,7 @@ class UploadRestControllerIntegrationTest {
                 )
 
         val room1110 = roomRepository.findByRoomNumber("1110")
-        assertThat(room1110).isNotNull()
+        assertThat(room1110).isNotNull
         assertThat(room1110!!.roomNumber).isEqualTo("1110")
         assertThat(room1110.persons)
                 .extracting("title", "firstName", "addition", "lastName", "ldapUser")
