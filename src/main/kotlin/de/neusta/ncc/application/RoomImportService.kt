@@ -38,5 +38,4 @@ class RoomImportService(private var roomUniqueValidator: RoomUniqueValidator,
 
         ldapUserUniqueValidator.validate(ldapUsers)
     }
-
 }

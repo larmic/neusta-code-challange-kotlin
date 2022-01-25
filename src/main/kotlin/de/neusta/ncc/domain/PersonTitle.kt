@@ -1,7 +1,5 @@
 package de.neusta.ncc.domain
 
-import java.util.*
-
 enum class PersonTitle(val label: String) {
 
     DR("Dr.");
