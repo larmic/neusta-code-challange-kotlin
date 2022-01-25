@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -19,9 +18,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomRestControllerTest {
 
@@ -37,62 +34,78 @@ class RoomRestControllerTest {
     @BeforeEach
     fun setUp() {
         every { (roomRepositoryMock.getRooms()) } returns listOf(
-                createRoom("1000", "Susanne Moog (smoog)"),
-                createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
+            createRoom("1000", "Susanne Moog (smoog)"),
+            createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
         )
         every { roomRepositoryMock.findByRoomNumber("1000") } returns createRoom("1000", "Susanne Moog (smoog)")
-        every { roomRepositoryMock.findByRoomNumber("1001") } returns createRoom("1001", "Alexander James Cole (acole)", "Dr. Samin van Ölker (soelker)")
+        every { roomRepositoryMock.findByRoomNumber("1001") } returns createRoom(
+            roomNumber = "1001",
+            "Alexander James Cole (acole)",
+            "Dr. Samin van Ölker (soelker)"
+        )
     }
 
     @Test
     fun `find all rooms`() {
-        val exchange = testRestTemplate.exchange("/api/room", HttpMethod.GET, HttpEntity.EMPTY, object : ParameterizedTypeReference<List<RoomDto>>() {
+        val exchange = testRestTemplate.exchange(
+            "/api/room",
+            HttpMethod.GET,
+            HttpEntity.EMPTY,
+            object : ParameterizedTypeReference<List<RoomDto>>() {
 
-        })
+            })
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
         assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
+            )
         assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
-                        Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
+                Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
+            )
     }
 
     @Test
     fun `find all rooms and filter by empty ldap user`() {
-        val exchange = testRestTemplate.exchange("/api/room?ldapUser=", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
+        val exchange = testRestTemplate.exchange(
+            "/api/room?ldapUser=",
+            HttpMethod.GET,
+            null,
+            object : ParameterizedTypeReference<List<RoomDto>>() {
 
-        })
+            })
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).extracting("room").containsExactlyInAnyOrder("1000", "1001")
         assertThat(getRoomFrom(exchange.body!!, "1000")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
+            )
         assertThat(getRoomFrom(exchange.body!!, "1001")!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
-                        Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
+                Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
+            )
     }
 
     @Test
     fun testGetAllRoomsWithNoRoomsExists() {
         every { (roomRepositoryMock.getRooms()) } returns emptyList()
 
-        val exchange = testRestTemplate.exchange("/api/room", HttpMethod.GET, null, object : ParameterizedTypeReference<List<RoomDto>>() {
+        val exchange = testRestTemplate.exchange(
+            "/api/room",
+            HttpMethod.GET,
+            null,
+            object : ParameterizedTypeReference<List<RoomDto>>() {
 
-        })
+            })
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(exchange.body).isEmpty()
@@ -105,20 +118,20 @@ class RoomRestControllerTest {
         assertThat(room1000.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(room1000.body!!.room).isEqualTo("1000")
         assertThat(room1000.body!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Susanne", null, "Moog", "smoog")
+            )
 
         val room1001 = testRestTemplate.exchange("/api/room/1001", HttpMethod.GET, null, RoomDto::class.java)
         assertThat(room1001.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(room1001.body!!.room).isEqualTo("1001")
         assertThat(room1001.body!!.people)
-                .extracting("title", "firstName", "addition", "lastName", "ldapUser")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
-                        Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
-                )
+            .extracting("title", "firstName", "addition", "lastName", "ldapUser")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(null, "Alexander James", null, "Cole", "acole"),
+                Tuple.tuple("Dr.", "Samin", "van", "Ölker", "soelker")
+            )
     }
 
     @Test
@@ -175,8 +188,8 @@ class RoomRestControllerTest {
 
     private fun getRoomFrom(rooms: List<RoomDto>, roomNumber: String): RoomDto? {
         return rooms.stream()
-                .filter { (_, room) -> roomNumber == room }
-                .findAny().orElse(null)
+            .filter { (_, room) -> roomNumber == room }
+            .findAny().orElse(null)
     }
 
 

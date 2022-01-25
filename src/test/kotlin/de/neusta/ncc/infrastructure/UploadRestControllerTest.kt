@@ -10,20 +10,16 @@ import de.neusta.ncc.infrastructure.mapper.exception.CsvPersonNotValidException
 import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.lang.AssertionError
 
 /**
  * Mapping and validation tests of {@link UploadController}.
  * <p>
  * Mocks inner mapper and services to be loosely coupled from core logic.
  */
-@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UploadRestControllerTest {
 
@@ -100,7 +96,8 @@ class UploadRestControllerTest {
     }
 
     private fun assertMethodNotAllowedForUpload(httpMethod: HttpMethod) {
-        val exchange = uploadRequestSender.sendUploadRequest("simple.csv", httpMethod, DefaultSpringErrorDto::class.java)
+        val exchange =
+            uploadRequestSender.sendUploadRequest("simple.csv", httpMethod, DefaultSpringErrorDto::class.java)
 
         assertThat(exchange.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
         assertThat(exchange.body?.timestamp).isNotEmpty()
