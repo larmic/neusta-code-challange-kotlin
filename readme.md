@@ -1,6 +1,6 @@
 # Neusta Code Challenge 
 
-[![Build Status](https://travis-ci.org/larmic/neusta-code-challange-kotlin.svg?branch=development)](https://travis-ci.org/larmic/neusta-code-challange-kotlin)
+[![CI with Maven](https://github.com/larmic/neusta-code-challange-kotlin/actions/workflows/maven.yml/badge.svg)](https://github.com/larmic/neusta-code-challange-kotlin/actions/workflows/maven.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Introduction
