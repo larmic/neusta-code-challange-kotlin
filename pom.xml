@@ -31,7 +31,7 @@
         <kotlin.version>1.6.10</kotlin.version>
 
         <!-- libs -->
-        <jackson-dataformat-csv.version>2.13.1</jackson-dataformat-csv.version>
+        <jackson-dataformat-csv.version>2.13.2</jackson-dataformat-csv.version>
         <swagger.version>1.6.6</swagger.version>
 
         <!-- testing -->
