@@ -3,7 +3,7 @@ package de.neusta.ncc.application.validator
 import java.util.*
 
 /**
- * Validate each string is unique in given list of strings (with ignoring case sensitive).
+ * Validate each string is unique in given list of strings (with ignoring case-sensitive).
  */
 class StringListUniqueChecker {
 
